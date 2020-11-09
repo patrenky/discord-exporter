@@ -1,0 +1,8 @@
+{
+    "name": "discord-exporter",
+    "version": "1.0.0",
+    "dependencies": {
+        "https": "^1.0.0",
+        "lodash": "^4.17.20"
+    }
+}

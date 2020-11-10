@@ -11,6 +11,12 @@ const saveJsonData = () => {
     fs.writeFileSync(`messages-${config.channel}.json`, JSON.stringify(jsonData));
 }
 
+const savePrintAndExit = (message, exitCode) => {
+    saveJsonData();
+    console.log(message);
+    process.exit(exitCode);
+}
+
 const channelRequest = (channel, token, before) => {
     return new Promise(async resolve => {
         let path = `/api/v8/channels/${channel}/messages?limit=${messagesPerRequest}`;
@@ -32,9 +38,7 @@ const channelRequest = (channel, token, before) => {
             const code = res.statusCode;
 
             if (code !== 200) {
-                console.error("Request failed! Exit.");
-                saveJsonData();
-                process.exit(1);
+                savePrintAndExit("Request failed! Exit.", 1);
             }
 
             const body = [];
@@ -66,15 +70,11 @@ setTimeout(async () => {
         try {
             response = JSON.parse(response);
         } catch (err) {
-            console.error(err);
-            saveJsonData();
-            process.exit(1);
+            savePrintAndExit(err, 1);
         }
 
         if (response.length < 1) {
-            console.error("No more response data");
-            saveJsonData();
-            process.exit(1);
+            savePrintAndExit("No more response data", 0);
         }
 
         const cleanData = map(response, data => ({
@@ -100,5 +100,5 @@ setTimeout(async () => {
         maxRequestsLoops--;
     }
 
-    saveJsonData();
+    savePrintAndExit(`Max defined messages (${config.maxMessages}) exported`, 0);
 }, 1);
